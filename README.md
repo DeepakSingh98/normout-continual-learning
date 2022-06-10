@@ -36,3 +36,11 @@ We provide scripts to replicate the results:
  * 3.3 Run ```bash replicate_appendix_c5.sh```  for the experiment in appendix C5 (Stabilizing other methods).
  
 For faster replication, here we have only 3 runs per method per experiment, but we used 5 runs for the reported results.
+
+# My Changes
+
+## Edits
+Added in NormOut layers into the models; unclear how well these will work in ResNets.
+
+## Instructions for Running
+Request a node with `srun -n 6 --mem 40G --pty -t 10:00:00 -p gpu --gres=gpu:teslaV100:1 bash`, activate your relevant environment (Xander: `source activate sdm_env`, Deepak: `conda activate env_pytorch`), then call `module load gcc/9.2.0`.

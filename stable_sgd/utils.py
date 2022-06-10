@@ -28,6 +28,7 @@ def parse_arguments():
 	parser.add_argument('--hiddens', default=256, type=int, help='num of hidden neurons in each layer of a 2-layer MLP')
 	parser.add_argument('--compute-eigenspectrum', default=False, type=bool, help='compute eigenvalues/eigenvectors?')
 	parser.add_argument('--seed', default=1234, type=int, help='random seed')
+	parser.add_argument('--normalization-type', default=None, type=str, help='normalization type for normout (None as default uses dropot)')
 
 	args = parser.parse_args()
 	return args

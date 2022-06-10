@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 from torch.nn.functional import relu, avg_pool2d
 
+from normout import NormOut
+
 
 class MLP(nn.Module):
 	"""
@@ -11,19 +13,25 @@ class MLP(nn.Module):
 		super(MLP, self).__init__()
 		self.W1 = nn.Linear(784, hiddens)
 		self.relu = nn.ReLU(inplace=True)
-		self.dropout_1 = nn.Dropout(p=config['dropout'])
+		if config['normalization-type'] is None:
+			self.custom_layer_1 = nn.Dropout(p=config['dropout'])
+		else:
+			self.custom_layer_1 = NormOut(normalization_type=config['normalization-type'])
 		self.W2 = nn.Linear(hiddens, hiddens)
-		self.dropout_2 = nn.Dropout(p=config['dropout'])
+		if config['normalization-type'] is None:
+			self.custom_layer_2 = nn.Dropout(p=config['dropout'])
+		else:
+			self.custom_layer_2 = NormOut(normalization_type=config['normalization-type'])
 		self.W3 = nn.Linear(hiddens, 10)
 
 	def forward(self, x, task_id=None):
 		x = x.view(-1, 784)
 		out = self.W1(x)
 		out = self.relu(out)
-		out = self.dropout_1(out)
+		out = self.custom_layer_1(out)
 		out = self.W2(out)
 		out = self.relu(out)
-		out = self.dropout_2(out)
+		out = self.custom_layer_2(out)
 		out = self.W3(out)
 		return out
 
@@ -47,15 +55,30 @@ class BasicBlock(nn.Module):
 				nn.Conv2d(in_planes, self.expansion * planes, kernel_size=1,
 						  stride=stride, bias=False),
 			)
-		self.IC1 = nn.Sequential(
-			nn.BatchNorm2d(planes),
-			nn.Dropout(p=config['dropout'])
-			)
-
-		self.IC2 = nn.Sequential(
-			nn.BatchNorm2d(planes),
-			nn.Dropout(p=config['dropout'])
-			)
+		
+		if config['normalization-type'] is None:
+			self.IC1 = nn.Sequential(
+				nn.BatchNorm2d(planes),
+				nn.Dropout(p=config['dropout'])
+				)
+		
+		else:
+			self.IC1 = nn.Sequential(
+				nn.BatchNorm2d(planes),
+				NormOut(normalization_type=config['normalization-type'])
+				)
+		
+		if config['normalization-type'] is None:
+			self.IC2 = nn.Sequential(
+				nn.BatchNorm2d(planes),
+				nn.Dropout(p=config['dropout'])
+				)
+		
+		else:
+			self.IC2 = nn.Sequential(
+				nn.BatchNorm2d(planes),
+				NormOut(normalization_type=config['normalization-type'])
+				)
 
 	def forward(self, x):
 		out = self.conv1(x)

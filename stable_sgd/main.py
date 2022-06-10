@@ -96,9 +96,9 @@ def get_benchmark_model(args):
 	if 'mnist' in args.dataset:
 		if args.tasks == 20 and args.hiddens < 256:
 			print("Warning! the main paper MLP with 256 neurons for experiment with 20 tasks")
-		return MLP(args.hiddens, {'dropout': args.dropout}).to(DEVICE)
+		return MLP(args.hiddens, {'dropout': args.dropout, 'normalization-type': args.normalization_type}).to(DEVICE)
 	elif 'cifar' in args.dataset:
-		return ResNet18(config={'dropout': args.dropout}).to(DEVICE)
+		return ResNet18(config={'dropout': args.dropout, 'normalization-type': normalization_type}).to(DEVICE)
 	else:
 		raise Exception("Unknown dataset.\n"+
 						"The code supports 'perm-mnist, rot-mnist, and cifar-100.")
